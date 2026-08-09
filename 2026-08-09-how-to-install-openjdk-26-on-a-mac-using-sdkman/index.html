@@ -1,0 +1,360 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v7.2.0"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DW-LBy1z.js"></script><!-- Google Fonts: Inter --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><!-- FOUC Prevention Script --><script>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+      window.localStorage.setItem('theme', theme);
+    </script><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="alternate" type="application/rss+xml" title="Shmuel Blog" href="/rss.xml"><link rel="canonical" href="https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-a-mac-using-sdkman/"><meta name="description" content="How to Install OpenJDK 26 on a Mac Using SDKMAN — by Shmuel"><title>How to Install OpenJDK 26 on a Mac Using SDKMAN - Shmuel Blog</title><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><!-- Open Graph --><meta property="og:type" content="article"><meta property="og:url" content="https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-a-mac-using-sdkman/"><meta property="og:title" content="How to Install OpenJDK 26 on a Mac Using SDKMAN - Shmuel Blog"><meta property="og:description" content="How to Install OpenJDK 26 on a Mac Using SDKMAN — by Shmuel"><meta property="og:site_name" content="Shmuel Blog"><meta property="og:locale" content="en_US"><meta property="article:published_time" content="2026-08-09T00:00:00.000Z"><meta property="article:author" content="Shmuel"><!-- Twitter --><meta name="twitter:card" content="summary"><meta name="twitter:title" content="How to Install OpenJDK 26 on a Mac Using SDKMAN - Shmuel Blog"><meta name="twitter:description" content="How to Install OpenJDK 26 on a Mac Using SDKMAN — by Shmuel"><link rel="stylesheet" href="/_astro/Layout.CjfiSeDI.css"></head><body><div id="reading-progress"></div><div class="site-wrapper"><header class="glass-header"><div class="header-inner"><a href="/" class="site-title">~/blog</a><nav><button id="theme-toggle" class="icon-btn" aria-label="Toggle theme"><svg id="moon-icon" class="theme-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg><svg id="sun-icon" class="theme-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button><button id="search-btn" class="search-btn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span class="search-text">Search...</span><span class="search-shortcut">⌘K</span></button><dialog id="search-modal" class="search-modal"><div class="search-container"><div class="search-header"><h3>Command Palette</h3><form method="dialog"><button class="close-btn" aria-label="Close search">×</button></form></div><div class="command-actions"><button class="cmd-action" onclick="document.getElementById('theme-toggle')?.click(); document.getElementById('search-modal').close();"><span>🌗 Toggle Theme</span></button><button class="cmd-action" onclick="window.print(); document.getElementById('search-modal').close();"><span>🖨️ Print / PDF</span></button><a href="/" class="cmd-action" onclick="document.getElementById('search-modal').close();" style="text-decoration: none; color: inherit;"><span>🏠 Go Home</span></a></div><div id="search-ui"></div></div></dialog><script>
+  let pagefindLoaded = false;
+
+  function initSearch() {
+    const btn = document.getElementById('search-btn');
+    const modal = document.getElementById('search-modal');
+    
+    if (!btn || !modal) return;
+
+    const openSearch = async () => {
+      modal.showModal();
+      
+      // Lazy load Pagefind UI only when opened
+      if (!pagefindLoaded) {
+        pagefindLoaded = true;
+        
+        // Load CSS
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/pagefind/pagefind-ui.css';
+        document.head.appendChild(link);
+
+        // Load JS
+        const script = document.createElement('script');
+        script.src = '/pagefind/pagefind-ui.js';
+        script.onload = () => {
+          try {
+            new window.PagefindUI({ 
+              element: "#search-ui",
+              showSubResults: true,
+              resetStyles: false
+            });
+            // Focus the input
+            setTimeout(() => {
+              const input = document.querySelector('.pagefind-ui__search-input');
+              if (input) input.focus();
+            }, 100);
+          } catch (e) {
+            console.error("Pagefind initialization error:", e);
+            document.getElementById('search-ui').innerHTML = "<p style='padding: 1rem; color: red;'>Error initializing search UI.</p>";
+          }
+        };
+        script.onerror = () => {
+          document.getElementById('search-ui').innerHTML = "<p style='padding: 1rem;'>Search is only available in the production build. Run <code>bun run build && bun run preview</code> or <code>bunx serve dist</code> to test it.</p>";
+        };
+        document.body.appendChild(script);
+      } else {
+        // If already loaded, just focus
+        setTimeout(() => {
+          const input = document.querySelector('.pagefind-ui__search-input');
+          if (input) input.focus();
+        }, 100);
+      }
+    };
+
+    btn.addEventListener('click', openSearch);
+
+    // Keyboard shortcut (Cmd+K or Ctrl+K)
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        openSearch();
+      }
+    });
+
+    // Close on click outside
+    modal.addEventListener('click', (e) => {
+      const dialogDimensions = modal.getBoundingClientRect();
+      if (
+        e.clientX < dialogDimensions.left ||
+        e.clientX > dialogDimensions.right ||
+        e.clientY < dialogDimensions.top ||
+        e.clientY > dialogDimensions.bottom
+      ) {
+        modal.close();
+      }
+    });
+  }
+
+  // Re-run on Astro View Transitions
+  document.addEventListener('astro:page-load', initSearch);
+</script><a href="/list">List</a><a href="/tags">Tags</a><a href="/categories">Categories</a></nav></div></header><main><article class="reveal-on-scroll"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"How to Install OpenJDK 26 on a Mac Using SDKMAN","datePublished":"2026-08-09T00:00:00.000Z","dateModified":"2026-08-09T00:00:00.000Z","author":{"@type":"Person","name":"Shmuel"},"url":"https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-a-mac-using-sdkman/"}</script><div class="article-actions" style="display: flex; gap: 1rem; margin-bottom: 1rem; justify-content: flex-end;"><button id="tts-btn" class="icon-btn" aria-label="Listen to article" title="Listen to article">🔊 Listen</button><button id="print-btn" class="icon-btn" aria-label="Print or Save PDF" title="Print or Save PDF">🖨️ Print</button></div><header class="article-header"><h1 class="article-title" style="view-transition-name: title-how-to-install-open-jdk-26-on-a-mac-using-sdkman">How to Install OpenJDK 26 on a Mac Using SDKMAN</h1><div class="post-meta"><p>By Shmuel • 3 min read</p><p>Created: 2026-08-09 | Updated: 2026-08-09</p><div class="tags"><a href="/tags/jdk" class="tag">#JDK</a><a href="/tags/java" class="tag">#Java</a><a href="/tags/sdkman" class="tag">#SDKMAN</a></div><div class="categories"><a href="/categories/software" class="category">Software</a><a href="/categories/technology-stack" class="category">technology stack</a></div></div></header><div class="article-layout"><div class="content"><h1 id="how-to-install-openjdk-26-on-a-mac-using-sdkman">How to Install OpenJDK 26 on a Mac Using SDKMAN</h1>
+<p>Welcome to the “blog-posts” series! If you are a developer using a Mac, setting up Java should be quick and easy. In this post, I will show you how to install OpenJDK 26 using a great tool called SDKMAN.</p>
+<p>This guide uses clear and simple English, so it is easy to follow for developers everywhere.</p>
+<h2 id="what-is-sdkman">What is SDKMAN?</h2>
+<p><a href="https://sdkman.io/">SDKMAN!</a> stands for <strong>Software Development Kit Manager</strong>.</p>
+<p>It is a free tool for your command line. It helps you install, manage, and switch between different versions of development tools especially Java.</p>
+<p>Why use SDKMAN? Instead of downloading zip files from websites and manually editing your system environment variables (like <code>JAVA_HOME</code>), SDKMAN does all the hard work automatically in your Terminal.</p>
+<h2 id="step-1-open-your-terminal">Step 1: Open Your Terminal</h2>
+<p>First, you need to open the <strong>Terminal</strong> application on your MacBook.</p>
+<ul>
+<li>Press <code>Command + Space</code> to open Spotlight Search.</li>
+<li>Type <strong>Terminal</strong> and press <code>Enter</code>.</li>
+</ul>
+<h2 id="step-2-install-sdkman">Step 2: Install SDKMAN</h2>
+<p>To install SDKMAN, you just need to run one command. Copy the code below, paste it into your Terminal, and press <code>Enter</code>:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">curl</span><span style="color:#79B8FF"> -s</span><span style="color:#9ECBFF"> "https://get.sdkman.io"</span><span style="color:#F97583"> |</span><span style="color:#B392F0"> bash</span></span></code></pre>
+<p>The script will download and set up SDKMAN on your system.</p>
+<p>When it finishes, you must load SDKMAN so your Terminal recognizes it. You can either close and reopen the Terminal, or run this command:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#79B8FF">source</span><span style="color:#9ECBFF"> "</span><span style="color:#E1E4E8">$HOME</span><span style="color:#9ECBFF">/.sdkman/bin/sdkman-init.sh"</span></span></code></pre>
+<p>To check if it worked, type this:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sdk</span><span style="color:#9ECBFF"> version</span></span></code></pre>
+<p>If you see a version number on your screen, SDKMAN is installed and ready!</p>
+<h2 id="step-3-install-openjdk-26">Step 3: Install OpenJDK 26</h2>
+<p>Now, we will use SDKMAN to install Java. SDKMAN has a big list of Java versions from many different providers.</p>
+<p>To see the full list of available Java versions, run:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sdk</span><span style="color:#9ECBFF"> list</span><span style="color:#9ECBFF"> java</span></span></code></pre>
+<p>Look in the list for <strong>OpenJDK</strong> and find version 26. The identifier will usually look like <code>26-open</code>. <em>(Note: If it is an Early Access version, it might look like <code>26.ea-open</code>)</em>.</p>
+<p>To install it, run this command:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">sdk</span><span style="color:#9ECBFF"> install</span><span style="color:#9ECBFF"> java</span><span style="color:#9ECBFF"> 26-open</span></span></code></pre>
+<p>SDKMAN will download OpenJDK 26 and configure it. If the Terminal asks you “Do you want this to be set as default?”, type <code>Y</code> (for Yes) and press <code>Enter</code>.</p>
+<h2 id="step-4-verify-your-java-version">Step 4: Verify Your Java Version</h2>
+<p>Let’s make sure Java is working correctly. Run this command:</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#B392F0">java</span><span style="color:#79B8FF"> -version</span></span></code></pre>
+<p>You should see text on your screen that says something like <code>openjdk version "26"</code>.</p>
+<hr>
+<h2 id="conclusion">Conclusion</h2>
+<p>Great job! You have successfully installed SDKMAN and OpenJDK 26 on your Mac.</p>
+<p>The best part is that whenever you need to use an older or newer version of Java in the future, you do not need to do this setup again. You can just use SDKMAN to install and switch versions easily (for example: <code>sdk use java 21-open</code>).</p>
+</div><aside class="toc-sidebar"><nav class="toc"><h4>Table of Contents</h4><ul><li class="toc-depth-1"><a href="#how-to-install-openjdk-26-on-a-mac-using-sdkman">How to Install OpenJDK 26 on a Mac Using SDKMAN</a></li><li class="toc-depth-2"><a href="#what-is-sdkman">What is SDKMAN?</a></li><li class="toc-depth-2"><a href="#step-1-open-your-terminal">Step 1: Open Your Terminal</a></li><li class="toc-depth-2"><a href="#step-2-install-sdkman">Step 2: Install SDKMAN</a></li><li class="toc-depth-2"><a href="#step-3-install-openjdk-26">Step 3: Install OpenJDK 26</a></li><li class="toc-depth-2"><a href="#step-4-verify-your-java-version">Step 4: Verify Your Java Version</a></li><li class="toc-depth-2"><a href="#conclusion">Conclusion</a></li></ul></nav><script>
+    function initToC() {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const id = entry.target.getAttribute('id');
+            const link = document.querySelector(`.toc a[href="#${id}"]`);
+            
+            if (!link) return;
+
+            if (entry.intersectionRatio > 0) {
+              link.parentElement.classList.add('active');
+            } else {
+              link.parentElement.classList.remove('active');
+            }
+          });
+        },
+        { rootMargin: '-10% 0px -80% 0px' }
+      );
+
+      // Track all headers that have an `id` applied
+      document.querySelectorAll('article h2[id], article h3[id]').forEach((section) => {
+        observer.observe(section);
+      });
+    }
+
+    document.addEventListener('astro:page-load', initToC);
+    // Initialize immediately if not using View Transitions
+    if (document.readyState === 'complete') {
+      initToC();
+    } else {
+      window.addEventListener('DOMContentLoaded', initToC);
+    }
+  </script></aside></div><div class="share-link">Share: <a href="https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-a-mac-using-sdkman/" target="_blank" rel="noopener noreferrer">https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-a-mac-using-sdkman/</a></div><div class="related-posts"><h3 class="related-title">You might also like</h3><ul class="card-list"><li><a href="/2026-08-09-how-to-install-openjdk-26-on-windows-using-winget" class="card"><h4 class="card-title" style="font-size: 1.1rem; margin-bottom: 0.5rem;">How to Install OpenJDK 26 on Windows Using Winget</h4><div class="card-meta">2026-08-09</div></a></li></ul></div><div class="comments-section" style="margin-top: 4rem;"><h3 style="margin-bottom: 1.5rem;">Comments</h3><p style="color: var(--color-text-muted); font-style: italic;">Comments are currently disabled. To enable GitHub comments, please configure Giscus in the source code.</p><!-- Giscus Placeholder (Uncomment and configure to enable) --><!--
+      <script is:inline src="https://giscus.app/client.js"
+        data-repo="YOUR_GITHUB_USERNAME/YOUR_REPOSITORY"
+        data-repo-id="YOUR_REPO_ID"
+        data-category="Announcements"
+        data-category-id="YOUR_CATEGORY_ID"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+      </script>
+      --></div></article><script type="module" src="/_astro/_slug_.astro_astro_type_script_index_0_lang.BT87U9wE.js"></script><script>
+    // Text-to-Speech (Web Speech API)
+    function setupTTS() {
+      const btn = document.getElementById('tts-btn');
+      if (!btn) return;
+
+      let isSpeaking = false;
+      let speech = null;
+
+      btn.addEventListener('click', () => {
+        if (!speechSynthesis) {
+          alert("Sorry, your browser doesn't support text to speech!");
+          return;
+        }
+
+        if (isSpeaking) {
+          speechSynthesis.cancel();
+          btn.innerHTML = '🔊 Listen';
+          isSpeaking = false;
+          return;
+        }
+
+        const text = document.querySelector('.content').innerText;
+        speech = new SpeechSynthesisUtterance(text);
+        
+        speech.onend = () => {
+          btn.innerHTML = '🔊 Listen';
+          isSpeaking = false;
+        };
+
+        speechSynthesis.speak(speech);
+        btn.innerHTML = '⏹️ Stop';
+        isSpeaking = true;
+      });
+    }
+
+    // Scroll Reveal Animations
+    function setupReveal() {
+      const reveals = document.querySelectorAll('.reveal-on-scroll');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      reveals.forEach(element => observer.observe(element));
+    }
+
+    // Print functionality
+    function setupPrint() {
+      const btn = document.getElementById('print-btn');
+      if (btn) {
+        btn.addEventListener('click', () => window.print());
+      }
+    }
+    // Interactive Code Blocks (Copy Button)
+    function setupCodeBlocks() {
+      const codeBlocks = document.querySelectorAll('pre');
+      
+      codeBlocks.forEach((pre) => {
+        // Prevent double injection during View Transitions
+        if (pre.querySelector('.copy-btn')) return;
+
+        pre.style.position = 'relative';
+        
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-btn';
+        copyButton.innerHTML = 'Copy';
+        
+        copyButton.addEventListener('click', async () => {
+          const code = pre.querySelector('code')?.innerText || '';
+          try {
+            await navigator.clipboard.writeText(code);
+            copyButton.innerHTML = 'Copied!';
+            copyButton.classList.add('copied');
+            
+            setTimeout(() => {
+              copyButton.innerHTML = 'Copy';
+              copyButton.classList.remove('copied');
+            }, 2000);
+          } catch (err) {
+            console.error('Failed to copy text: ', err);
+          }
+        });
+        
+        pre.appendChild(copyButton);
+      });
+    }
+
+    function initArticle() {
+      setupCodeBlocks();
+      setupTTS();
+      setupReveal();
+      setupPrint();
+    }
+
+    document.addEventListener('astro:page-load', initArticle);
+    if (document.readyState === 'complete') initArticle();
+    else window.addEventListener('DOMContentLoaded', initArticle);
+  </script></main><button id="scroll-to-top" aria-label="Scroll to top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></button></div><script>
+      function setupScrollFeatures() {
+        // 1. Reading Progress Bar
+        const progressBar = document.getElementById('reading-progress');
+        const scrollBtn = document.getElementById('scroll-to-top');
+
+        const handleScroll = () => {
+          const windowScroll = window.scrollY || document.documentElement.scrollTop;
+          const documentHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          
+          if (progressBar) {
+            const scrollPercent = (windowScroll / documentHeight) * 100;
+            progressBar.style.width = scrollPercent + '%';
+          }
+
+          if (scrollBtn) {
+            if (windowScroll > 300) {
+              scrollBtn.classList.add('visible');
+            } else {
+              scrollBtn.classList.remove('visible');
+            }
+          }
+        };
+
+        document.addEventListener('scroll', handleScroll, { passive: true });
+        
+        if (scrollBtn) {
+          scrollBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      function setupThemeToggle() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+
+        const updateIcons = (theme) => {
+          if (theme === 'dark') {
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+          } else {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+          }
+        };
+
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 
+                            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        updateIcons(currentTheme);
+
+        if (themeToggle) {
+          themeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcons(newTheme);
+          });
+        }
+      }
+
+      function initLayout() {
+        setupScrollFeatures();
+        setupThemeToggle();
+      }
+
+      document.addEventListener('astro:page-load', initLayout);
+      if (document.readyState === 'complete') initLayout();
+      else window.addEventListener('DOMContentLoaded', initLayout);
+    </script></body></html>

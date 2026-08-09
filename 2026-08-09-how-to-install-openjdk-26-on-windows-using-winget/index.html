@@ -1,0 +1,372 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator" content="Astro v7.2.0"><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><script type="module" src="/_astro/ClientRouter.astro_astro_type_script_index_0_lang.DW-LBy1z.js"></script><!-- Google Fonts: Inter --><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"><!-- FOUC Prevention Script --><script>
+      const theme = (() => {
+        if (typeof localStorage !== 'undefined' && localStorage.getItem('theme')) {
+          return localStorage.getItem('theme');
+        }
+        if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          return 'dark';
+        }
+        return 'light';
+      })();
+      
+      if (theme === 'light') {
+        document.documentElement.setAttribute('data-theme', 'light');
+      } else {
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }
+      window.localStorage.setItem('theme', theme);
+    </script><link rel="icon" type="image/svg+xml" href="/favicon.svg"><link rel="alternate" type="application/rss+xml" title="Shmuel Blog" href="/rss.xml"><link rel="canonical" href="https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-windows-using-winget/"><meta name="description" content="How to Install OpenJDK 26 on Windows Using Winget — by Shmuel"><title>How to Install OpenJDK 26 on Windows Using Winget - Shmuel Blog</title><meta name="astro-view-transitions-enabled" content="true"><meta name="astro-view-transitions-fallback" content="animate"><!-- Open Graph --><meta property="og:type" content="article"><meta property="og:url" content="https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-windows-using-winget/"><meta property="og:title" content="How to Install OpenJDK 26 on Windows Using Winget - Shmuel Blog"><meta property="og:description" content="How to Install OpenJDK 26 on Windows Using Winget — by Shmuel"><meta property="og:site_name" content="Shmuel Blog"><meta property="og:locale" content="en_US"><meta property="article:published_time" content="2026-08-09T00:00:00.000Z"><meta property="article:author" content="Shmuel"><!-- Twitter --><meta name="twitter:card" content="summary"><meta name="twitter:title" content="How to Install OpenJDK 26 on Windows Using Winget - Shmuel Blog"><meta name="twitter:description" content="How to Install OpenJDK 26 on Windows Using Winget — by Shmuel"><link rel="stylesheet" href="/_astro/Layout.CjfiSeDI.css"></head><body><div id="reading-progress"></div><div class="site-wrapper"><header class="glass-header"><div class="header-inner"><a href="/" class="site-title">~/blog</a><nav><button id="theme-toggle" class="icon-btn" aria-label="Toggle theme"><svg id="moon-icon" class="theme-icon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg><svg id="sun-icon" class="theme-icon" style="display: none;" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg></button><button id="search-btn" class="search-btn" aria-label="Search"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg><span class="search-text">Search...</span><span class="search-shortcut">⌘K</span></button><dialog id="search-modal" class="search-modal"><div class="search-container"><div class="search-header"><h3>Command Palette</h3><form method="dialog"><button class="close-btn" aria-label="Close search">×</button></form></div><div class="command-actions"><button class="cmd-action" onclick="document.getElementById('theme-toggle')?.click(); document.getElementById('search-modal').close();"><span>🌗 Toggle Theme</span></button><button class="cmd-action" onclick="window.print(); document.getElementById('search-modal').close();"><span>🖨️ Print / PDF</span></button><a href="/" class="cmd-action" onclick="document.getElementById('search-modal').close();" style="text-decoration: none; color: inherit;"><span>🏠 Go Home</span></a></div><div id="search-ui"></div></div></dialog><script>
+  let pagefindLoaded = false;
+
+  function initSearch() {
+    const btn = document.getElementById('search-btn');
+    const modal = document.getElementById('search-modal');
+    
+    if (!btn || !modal) return;
+
+    const openSearch = async () => {
+      modal.showModal();
+      
+      // Lazy load Pagefind UI only when opened
+      if (!pagefindLoaded) {
+        pagefindLoaded = true;
+        
+        // Load CSS
+        const link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.href = '/pagefind/pagefind-ui.css';
+        document.head.appendChild(link);
+
+        // Load JS
+        const script = document.createElement('script');
+        script.src = '/pagefind/pagefind-ui.js';
+        script.onload = () => {
+          try {
+            new window.PagefindUI({ 
+              element: "#search-ui",
+              showSubResults: true,
+              resetStyles: false
+            });
+            // Focus the input
+            setTimeout(() => {
+              const input = document.querySelector('.pagefind-ui__search-input');
+              if (input) input.focus();
+            }, 100);
+          } catch (e) {
+            console.error("Pagefind initialization error:", e);
+            document.getElementById('search-ui').innerHTML = "<p style='padding: 1rem; color: red;'>Error initializing search UI.</p>";
+          }
+        };
+        script.onerror = () => {
+          document.getElementById('search-ui').innerHTML = "<p style='padding: 1rem;'>Search is only available in the production build. Run <code>bun run build && bun run preview</code> or <code>bunx serve dist</code> to test it.</p>";
+        };
+        document.body.appendChild(script);
+      } else {
+        // If already loaded, just focus
+        setTimeout(() => {
+          const input = document.querySelector('.pagefind-ui__search-input');
+          if (input) input.focus();
+        }, 100);
+      }
+    };
+
+    btn.addEventListener('click', openSearch);
+
+    // Keyboard shortcut (Cmd+K or Ctrl+K)
+    document.addEventListener('keydown', (e) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        openSearch();
+      }
+    });
+
+    // Close on click outside
+    modal.addEventListener('click', (e) => {
+      const dialogDimensions = modal.getBoundingClientRect();
+      if (
+        e.clientX < dialogDimensions.left ||
+        e.clientX > dialogDimensions.right ||
+        e.clientY < dialogDimensions.top ||
+        e.clientY > dialogDimensions.bottom
+      ) {
+        modal.close();
+      }
+    });
+  }
+
+  // Re-run on Astro View Transitions
+  document.addEventListener('astro:page-load', initSearch);
+</script><a href="/list">List</a><a href="/tags">Tags</a><a href="/categories">Categories</a></nav></div></header><main><article class="reveal-on-scroll"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"How to Install OpenJDK 26 on Windows Using Winget","datePublished":"2026-08-09T00:00:00.000Z","dateModified":"2026-08-09T00:00:00.000Z","author":{"@type":"Person","name":"Shmuel"},"url":"https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-windows-using-winget/"}</script><div class="article-actions" style="display: flex; gap: 1rem; margin-bottom: 1rem; justify-content: flex-end;"><button id="tts-btn" class="icon-btn" aria-label="Listen to article" title="Listen to article">🔊 Listen</button><button id="print-btn" class="icon-btn" aria-label="Print or Save PDF" title="Print or Save PDF">🖨️ Print</button></div><header class="article-header"><h1 class="article-title" style="view-transition-name: title-how-to-install-open-jdk-26-on-windows-using-winget">How to Install OpenJDK 26 on Windows Using Winget</h1><div class="post-meta"><p>By Shmuel • 3 min read</p><p>Created: 2026-08-09 | Updated: 2026-08-09</p><div class="tags"><a href="/tags/jdk" class="tag">#JDK</a><a href="/tags/java" class="tag">#Java</a><a href="/tags/winget" class="tag">#winget</a><a href="/tags/windows" class="tag">#windows</a></div><div class="categories"><a href="/categories/software" class="category">Software</a><a href="/categories/tools" class="category">Tools</a><a href="/categories/technology-stack" class="category">technology stack</a></div></div></header><div class="article-layout"><div class="content"><h1 id="how-to-install-openjdk-26-on-windows-using-winget">How to Install OpenJDK 26 on Windows Using Winget</h1>
+<p>Welcome back! In our <a href="https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-a-mac-using-sdkman">previous post</a>, we learned how to install Java on a Mac. Today, we will learn how to easily install <strong>OpenJDK 26</strong> on a Windows computer. To do this, we will use a great tool built into Windows called <strong>winget</strong>.</p>
+<p>This guide is written in simple English, making it easy for developers everywhere to understand and follow.</p>
+<h2 id="what-is-winget">What is Winget?</h2>
+<p><strong>Winget</strong> (Windows Package Manager) is a free command-line tool made by Microsoft.</p>
+<p>Just like SDKMAN on macOS and Linux, winget helps you discover, install, update, and remove software on your Windows machine using only text commands. Instead of going to a website, downloading an <code>.exe</code> or <code>.msi</code> file, and clicking “Next” many times, winget does the whole installation process for you quickly in the background.</p>
+<h2 id="step-1-open-your-terminal">Step 1: Open Your Terminal</h2>
+<p>First, you need to open your command line app on Windows.</p>
+<ul>
+<li>
+<p>Click the <strong>Start Menu</strong> (or press the Windows key).</p>
+</li>
+<li>
+<p>Type <strong>Terminal</strong> or <strong>PowerShell</strong> and press <code>Enter</code>.</p>
+</li>
+</ul>
+<h2 id="step-2-search-for-openjdk-26">Step 2: Search for OpenJDK 26</h2>
+<p>Because there are different versions of OpenJDK made by different companies (like Microsoft, Oracle, or Eclipse Temurin), it is a good idea to search for it first. This shows you the exact name you need to type to install it.</p>
+<p>In your Terminal, run this command:</p>
+<p>PowerShell</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>winget search "OpenJDK 26"</span></span></code></pre>
+<p>Winget will search its database and show you a list of results. Look at the column named <code>Id</code>. You will see IDs that look similar to these:</p>
+<ul>
+<li>
+<p><code>Microsoft.OpenJDK.26</code></p>
+</li>
+<li>
+<p><code>Oracle.JDK.26</code></p>
+</li>
+<li>
+<p><code>EclipseAdoptium.Temurin.26.JDK</code></p>
+</li>
+</ul>
+<p>Choose the one you prefer. Many developers use the Microsoft build or Eclipse Temurin because they are free and open-source.</p>
+<h2 id="step-3-install-openjdk-26">Step 3: Install OpenJDK 26</h2>
+<p>Once you find the exact <code>Id</code> from the search step, you can install it. For this example, we will install the Microsoft Build of OpenJDK 26.</p>
+<p>Run this command in your Terminal:</p>
+<p>PowerShell</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>winget install Microsoft.OpenJDK.26</span></span></code></pre>
+<p><em>(Note: If you chose a different vendor in Step 2, just replace</em> <code>Microsoft.OpenJDK.26</code> <em>with that specific ID).</em></p>
+<p>A loading bar will appear on your screen. Winget will safely download the installer and run it for you. If a Windows pop-up asks if you want to allow this app to make changes to your device, click <strong>Yes</strong>.</p>
+<h2 id="step-4-verify-your-java-version">Step 4: Verify Your Java Version</h2>
+<p>After the installation says “Successfully installed”, we need to check if Java is working.</p>
+<p>Close your Terminal and <strong>open a new one</strong> (this step is important so Windows can load your new Java settings). Then, type this command:</p>
+<p>PowerShell</p>
+<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="plaintext"><code><span class="line"><span>java -version</span></span></code></pre>
+<p>If everything worked, you should see text on your screen saying <code>openjdk version "26"</code>.</p>
+<h2 id="conclusion">Conclusion</h2>
+<p>Great job! You have successfully used winget to find and install OpenJDK 26 on your Windows PC.</p>
+<p>Winget makes it incredibly easy to manage software on Windows. You can use it to install almost any popular development tool you need in the future!</p>
+</div><aside class="toc-sidebar"><nav class="toc"><h4>Table of Contents</h4><ul><li class="toc-depth-1"><a href="#how-to-install-openjdk-26-on-windows-using-winget">How to Install OpenJDK 26 on Windows Using Winget</a></li><li class="toc-depth-2"><a href="#what-is-winget">What is Winget?</a></li><li class="toc-depth-2"><a href="#step-1-open-your-terminal">Step 1: Open Your Terminal</a></li><li class="toc-depth-2"><a href="#step-2-search-for-openjdk-26">Step 2: Search for OpenJDK 26</a></li><li class="toc-depth-2"><a href="#step-3-install-openjdk-26">Step 3: Install OpenJDK 26</a></li><li class="toc-depth-2"><a href="#step-4-verify-your-java-version">Step 4: Verify Your Java Version</a></li><li class="toc-depth-2"><a href="#conclusion">Conclusion</a></li></ul></nav><script>
+    function initToC() {
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            const id = entry.target.getAttribute('id');
+            const link = document.querySelector(`.toc a[href="#${id}"]`);
+            
+            if (!link) return;
+
+            if (entry.intersectionRatio > 0) {
+              link.parentElement.classList.add('active');
+            } else {
+              link.parentElement.classList.remove('active');
+            }
+          });
+        },
+        { rootMargin: '-10% 0px -80% 0px' }
+      );
+
+      // Track all headers that have an `id` applied
+      document.querySelectorAll('article h2[id], article h3[id]').forEach((section) => {
+        observer.observe(section);
+      });
+    }
+
+    document.addEventListener('astro:page-load', initToC);
+    // Initialize immediately if not using View Transitions
+    if (document.readyState === 'complete') {
+      initToC();
+    } else {
+      window.addEventListener('DOMContentLoaded', initToC);
+    }
+  </script></aside></div><div class="share-link">Share: <a href="https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-windows-using-winget/" target="_blank" rel="noopener noreferrer">https://sh-mu.github.io/2026-08-09-how-to-install-openjdk-26-on-windows-using-winget/</a></div><div class="related-posts"><h3 class="related-title">You might also like</h3><ul class="card-list"><li><a href="/2026-08-09-how-to-install-openjdk-26-on-a-mac-using-sdkman" class="card"><h4 class="card-title" style="font-size: 1.1rem; margin-bottom: 0.5rem;">How to Install OpenJDK 26 on a Mac Using SDKMAN</h4><div class="card-meta">2026-08-09</div></a></li><li><a href="/2026-08-08-manage-multiple-github-accounts-using-the-github-cli" class="card"><h4 class="card-title" style="font-size: 1.1rem; margin-bottom: 0.5rem;">Manage multiple GitHub accounts using the GitHub CLI</h4><div class="card-meta">2026-08-08</div></a></li></ul></div><div class="comments-section" style="margin-top: 4rem;"><h3 style="margin-bottom: 1.5rem;">Comments</h3><p style="color: var(--color-text-muted); font-style: italic;">Comments are currently disabled. To enable GitHub comments, please configure Giscus in the source code.</p><!-- Giscus Placeholder (Uncomment and configure to enable) --><!--
+      <script is:inline src="https://giscus.app/client.js"
+        data-repo="YOUR_GITHUB_USERNAME/YOUR_REPOSITORY"
+        data-repo-id="YOUR_REPO_ID"
+        data-category="Announcements"
+        data-category-id="YOUR_CATEGORY_ID"
+        data-mapping="pathname"
+        data-strict="0"
+        data-reactions-enabled="1"
+        data-emit-metadata="0"
+        data-input-position="bottom"
+        data-theme="preferred_color_scheme"
+        data-lang="en"
+        crossorigin="anonymous"
+        async>
+      </script>
+      --></div></article><script type="module" src="/_astro/_slug_.astro_astro_type_script_index_0_lang.BT87U9wE.js"></script><script>
+    // Text-to-Speech (Web Speech API)
+    function setupTTS() {
+      const btn = document.getElementById('tts-btn');
+      if (!btn) return;
+
+      let isSpeaking = false;
+      let speech = null;
+
+      btn.addEventListener('click', () => {
+        if (!speechSynthesis) {
+          alert("Sorry, your browser doesn't support text to speech!");
+          return;
+        }
+
+        if (isSpeaking) {
+          speechSynthesis.cancel();
+          btn.innerHTML = '🔊 Listen';
+          isSpeaking = false;
+          return;
+        }
+
+        const text = document.querySelector('.content').innerText;
+        speech = new SpeechSynthesisUtterance(text);
+        
+        speech.onend = () => {
+          btn.innerHTML = '🔊 Listen';
+          isSpeaking = false;
+        };
+
+        speechSynthesis.speak(speech);
+        btn.innerHTML = '⏹️ Stop';
+        isSpeaking = true;
+      });
+    }
+
+    // Scroll Reveal Animations
+    function setupReveal() {
+      const reveals = document.querySelectorAll('.reveal-on-scroll');
+      
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('is-visible');
+          }
+        });
+      }, { threshold: 0.1 });
+
+      reveals.forEach(element => observer.observe(element));
+    }
+
+    // Print functionality
+    function setupPrint() {
+      const btn = document.getElementById('print-btn');
+      if (btn) {
+        btn.addEventListener('click', () => window.print());
+      }
+    }
+    // Interactive Code Blocks (Copy Button)
+    function setupCodeBlocks() {
+      const codeBlocks = document.querySelectorAll('pre');
+      
+      codeBlocks.forEach((pre) => {
+        // Prevent double injection during View Transitions
+        if (pre.querySelector('.copy-btn')) return;
+
+        pre.style.position = 'relative';
+        
+        const copyButton = document.createElement('button');
+        copyButton.className = 'copy-btn';
+        copyButton.innerHTML = 'Copy';
+        
+        copyButton.addEventListener('click', async () => {
+          const code = pre.querySelector('code')?.innerText || '';
+          try {
+            await navigator.clipboard.writeText(code);
+            copyButton.innerHTML = 'Copied!';
+            copyButton.classList.add('copied');
+            
+            setTimeout(() => {
+              copyButton.innerHTML = 'Copy';
+              copyButton.classList.remove('copied');
+            }, 2000);
+          } catch (err) {
+            console.error('Failed to copy text: ', err);
+          }
+        });
+        
+        pre.appendChild(copyButton);
+      });
+    }
+
+    function initArticle() {
+      setupCodeBlocks();
+      setupTTS();
+      setupReveal();
+      setupPrint();
+    }
+
+    document.addEventListener('astro:page-load', initArticle);
+    if (document.readyState === 'complete') initArticle();
+    else window.addEventListener('DOMContentLoaded', initArticle);
+  </script></main><button id="scroll-to-top" aria-label="Scroll to top"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline></svg></button></div><script>
+      function setupScrollFeatures() {
+        // 1. Reading Progress Bar
+        const progressBar = document.getElementById('reading-progress');
+        const scrollBtn = document.getElementById('scroll-to-top');
+
+        const handleScroll = () => {
+          const windowScroll = window.scrollY || document.documentElement.scrollTop;
+          const documentHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+          
+          if (progressBar) {
+            const scrollPercent = (windowScroll / documentHeight) * 100;
+            progressBar.style.width = scrollPercent + '%';
+          }
+
+          if (scrollBtn) {
+            if (windowScroll > 300) {
+              scrollBtn.classList.add('visible');
+            } else {
+              scrollBtn.classList.remove('visible');
+            }
+          }
+        };
+
+        document.addEventListener('scroll', handleScroll, { passive: true });
+        
+        if (scrollBtn) {
+          scrollBtn.addEventListener('click', () => {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+        }
+      }
+
+      function setupThemeToggle() {
+        const themeToggle = document.getElementById('theme-toggle');
+        const sunIcon = document.getElementById('sun-icon');
+        const moonIcon = document.getElementById('moon-icon');
+
+        const updateIcons = (theme) => {
+          if (theme === 'dark') {
+            sunIcon.style.display = 'block';
+            moonIcon.style.display = 'none';
+          } else {
+            sunIcon.style.display = 'none';
+            moonIcon.style.display = 'block';
+          }
+        };
+
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 
+                            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        updateIcons(currentTheme);
+
+        if (themeToggle) {
+          themeToggle.addEventListener('click', () => {
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            const newTheme = isDark ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+            updateIcons(newTheme);
+          });
+        }
+      }
+
+      function initLayout() {
+        setupScrollFeatures();
+        setupThemeToggle();
+      }
+
+      document.addEventListener('astro:page-load', initLayout);
+      if (document.readyState === 'complete') initLayout();
+      else window.addEventListener('DOMContentLoaded', initLayout);
+    </script></body></html>
